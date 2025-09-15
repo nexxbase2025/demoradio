@@ -1,0 +1,137 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>La Buenota Radio Online</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ===== HEADER ===== -->
+    <header>
+      <div class="header-top">
+        <img class="logo" src="logo.png" alt="La Buenota" />
+        <h1 class="brand-title">La Buenota Radio Online</h1>
+        <button class="chip primary" data-tab="home">Inicio</button>
+      </div>
+      <nav class="header-bottom" id="tabs">
+        <button class="chip" data-tab="clientes">Nuestros clientes</button>
+        <button class="chip" data-tab="artistas">Nuestros artistas</button>
+        <button class="chip" data-tab="contacto">Contáctanos</button>
+      </nav>
+    </header>
+
+    <!-- ===== MAIN (vistas SPA) ===== -->
+    <main>
+      <!-- INICIO -->
+      <section class="view active" id="home" aria-labelledby="home">
+        <div class="player-wrap">
+          <div class="portrait-player">
+            <!-- Visualizador -->
+            <canvas id="viz" aria-hidden="true"></canvas>
+            <!-- Público -->
+            <div class="crowd"></div>
+            <!-- Botón Play/Pause -->
+            <button id="pp" class="pp" aria-label="Play/Pause">
+              <svg class="pp-icon" viewBox="0 0 100 100" aria-hidden="true">
+                <polygon id="playIcon" points="35,25 78,50 35,75" fill="#3b1300"/>
+                <g id="pauseIcon" style="display:none">
+                  <rect x="32" y="25" width="14" height="50" rx="4" fill="#3b1300"/>
+                  <rect x="56" y="25" width="14" height="50" rx="4" fill="#3b1300"/>
+                </g>
+              </svg>
+            </button>
+            <!-- Slogan -->
+            <div class="slogan">Más buena que...</div>
+            <!-- Overlay de desbloqueo -->
+            <div class="unlock" id="unlock">
+              <button id="unlockBtn" class="chip primary">Tocar para activar audio</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section class="view" id="clientes" aria-labelledby="clientes">
+        <div class="slider">
+          <button class="nav-btn left" id="prevCliente" aria-label="Anterior">‹</button>
+          <div class="slide" id="clientesSlide"></div>
+          <button class="nav-btn right" id="nextCliente" aria-label="Siguiente">›</button>
+        </div>
+        <p class="caption" id="clientesCaption"></p>
+        <div class="mini-player">
+          <button class="mini-pp" id="miniPP1" aria-label="Play/Pause mini">▶</button>
+          <div class="mini-track">La Buenota Radio Online — En Vivo</div>
+        </div>
+        <button class="back-btn" data-back="home">Regresar</button>
+      </section>
+
+      <!-- ARTISTAS -->
+      <section class="view" id="artistas" aria-labelledby="artistas">
+        <div class="slider">
+          <button class="nav-btn left" id="prevArtista" aria-label="Anterior">‹</button>
+          <div class="slide" id="artistasSlide"></div>
+          <button class="nav-btn right" id="nextArtista" aria-label="Siguiente">›</button>
+        </div>
+        <p class="caption" id="artistasCaption"></p>
+        <div class="mini-player">
+          <button class="mini-pp" id="miniPP2" aria-label="Play/Pause mini">▶</button>
+          <div class="mini-track">La Buenota Radio Online — En Vivo</div>
+        </div>
+        <button class="back-btn" data-back="home">Regresar</button>
+      </section>
+
+      <!-- CONTACTO -->
+      <section class="view" id="contacto" aria-labelledby="contacto">
+        <form id="contactForm" class="card">
+          <h3>Contáctanos</h3>
+          <input required name="name" placeholder="Nombre y Apellido" />
+          <input required type="email" name="email" placeholder="Correo electrónico" />
+          <input required name="phone" placeholder="Teléfono" />
+          <textarea required name="msg" rows="4" placeholder="Escribe tu mensaje..."></textarea>
+          <div class="form-actions">
+            <button type="button" id="sendWA" class="chip">WhatsApp</button>
+            <button type="button" id="sendMail" class="chip">Correo</button>
+            <button type="button" id="sendSMS" class="chip">SMS</button>
+            <button type="submit" class="chip primary">Enviar</button>
+          </div>
+        </form>
+        <div class="mini-player">
+          <button class="mini-pp" id="miniPP3" aria-label="Play/Pause mini">▶</button>
+          <div class="mini-track">La Buenota Radio Online — En Vivo</div>
+        </div>
+        <button class="back-btn" data-back="home">Regresar</button>
+      </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+      <div class="socials">
+        <a class="sbtn fb" href="#" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a class="sbtn tk" href="#" target="_blank" rel="noopener" aria-label="TikTok">t</a>
+        <a class="sbtn ig" href="#" target="_blank" rel="noopener" aria-label="Instagram">i</a>
+      </div>
+      <div class="copy">© 2025 La Buenota Radio Online</div>
+    </footer>
+  </div>
+
+  <!-- ===== BURBUJA FLOTANTE ===== -->
+  <div class="fab">
+    <div class="pulse"></div>
+    <button id="fabBtn" aria-label="Acciones">♪</button>
+    <div class="music-notes"><span>♪</span><span>♫</span><span>♬</span></div>
+  </div>
+  <div class="sheet" id="sheet">
+    <a id="whLink" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    <a id="callLink" href="tel:+593983706294">Llamar</a>
+  </div>
+
+  <!-- ===== AUDIO GLOBAL (persistente) ===== -->
+  <audio id="radio" preload="none" crossorigin="anonymous"
+         src="https://stream.zeno.fm/jpsr5zsxjlguv"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
