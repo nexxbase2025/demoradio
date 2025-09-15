@@ -6,18 +6,16 @@ const PHONE_EC = "+593983706294"; // 098 370 6294
 /* ===== Tabs SPA ===== */
 const tabs = document.querySelectorAll('#tabs .chip, .header-top .chip');
 const views = document.querySelectorAll('.view');
+function activateView(id){
+  tabs.forEach(c=>c.classList.toggle('primary', c.dataset.tab===id));
+  views.forEach(v=>v.classList.toggle('active', v.id===id));
+  // Al activar una vista, forzamos el re-size de mini-viz (para evitar width=0 cuando estaban ocultos)
+  resizeVisibleMiniViz();
+  // Si volvemos a home y el audio está en play, reanudamos el dibujo principal
+  if(id === "home" && !audio.paused && analyser){ startMainViz(); }
+}
 tabs.forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    tabs.forEach(c=>c.classList.remove('primary'));
-    chip.classList.add('primary');
-    const id = chip.dataset.tab;
-    views.forEach(v=>v.classList.toggle('active', v.id===id));
-
-    // Reiniciar espectros al volver a Inicio
-    if(id === "home" && !audio.paused && analyser){
-      startMainViz();
-    }
-  });
+  chip.addEventListener('click', ()=> activateView(chip.dataset.tab));
 });
 
 /* ===== Audio ===== */
@@ -130,9 +128,11 @@ async function setupAnalyser(){
     analyser.connect(audioCtx.destination);
 
     startMainViz();
-    makeMiniViz('viz1'); 
-    makeMiniViz('viz2'); 
-    makeMiniViz('viz3');
+
+    // Instanciar mini viz una sola vez (aunque estén ocultos)
+    registerMiniViz('viz1'); 
+    registerMiniViz('viz2'); 
+    registerMiniViz('viz3');
   }catch(err){
     drawFallback();
   }
@@ -179,10 +179,7 @@ if (prevArtista) prevArtista.onclick = ()=> art.prev();
 /* ===== Botón Regresar ===== */
 document.querySelectorAll('.back-btn').forEach(b=>{
   b.addEventListener('click', ()=>{
-    views.forEach(v=>v.classList.remove('active'));
-    const home = document.getElementById('home');
-    if (home) home.classList.add('active');
-    if(!audio.paused && analyser) startMainViz();
+    activateView('home');
   });
 });
 
@@ -219,27 +216,36 @@ if (contactForm){
   });
 }
 
-/* ===== Mini-espectros (Clientes / Artistas / Contacto) ===== */
-function makeMiniViz(canvasId){
+/* ===== Mini-espectros: robusto y responsivo ===== */
+const miniVizRegistry = new Map();
+
+function registerMiniViz(canvasId){
   const c = document.getElementById(canvasId);
-  if(!c) return;
+  if(!c || miniVizRegistry.has(canvasId)) return;
   const cx = c.getContext('2d');
 
   function size(){
-    c.width  = Math.max(1, c.offsetWidth  * devicePixelRatio);
-    c.height = Math.max(1, c.offsetHeight * devicePixelRatio);
+    // Si el canvas está oculto (offsetWidth=0), usa ancho del contenedor padre visible
+    const host = c.closest('.mini-player') || c.parentElement;
+    const fallbackW = host ? host.clientWidth - 80 : 300;
+    const w = (c.offsetWidth || fallbackW);
+    c.width  = Math.max(1, w * devicePixelRatio);
+    c.height = Math.max(1, c.offsetHeight * devicePixelRatio || 18 * devicePixelRatio);
   }
-  size(); addEventListener('resize', size);
+  size();
 
-  (function draw(){
-    if(!analyser){ requestAnimationFrame(draw); return; }
+  function draw(){
+    if(!analyser){
+      requestAnimationFrame(draw); 
+      return;
+    }
     const buf = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(buf);
     cx.clearRect(0,0,c.width,c.height);
-    const W=c.width,H=c.height,bars=16,step=Math.floor(buf.length/bars);
+    const W=c.width,H=c.height,bars=18,step=Math.max(1, Math.floor(buf.length/bars));
     for(let i=0;i<bars;i++){
       const v=buf[i*step]/255;
-      const x=(i+.5)*W/bars, w=W/bars*.6, h=Math.max(1, v*H);
+      const x=(i+.5)*W/bars, w=W/bars*.6, h=Math.max(1, v*(H*.95));
       const g=cx.createLinearGradient(0,0,0,H);
       g.addColorStop(0,"rgba(255,204,51,.9)");
       g.addColorStop(1,"rgba(255,102,0,.7)");
@@ -247,5 +253,25 @@ function makeMiniViz(canvasId){
       cx.fillRect(x-w/2, H-h, w, h);
     }
     requestAnimationFrame(draw);
-  })();
+  }
+  requestAnimationFrame(draw);
+
+  miniVizRegistry.set(canvasId, { size });
 }
+
+function resizeVisibleMiniViz(){
+  // Re-dimensiona solo los que están en la vista activa
+  document.querySelectorAll('.view.active .mini-viz').forEach(cv=>{
+    const rec = miniVizRegistry.get(cv.id);
+    if(rec) rec.size();
+  });
+}
+
+// Registrar (aunque estén ocultos; se redimensionan al mostrarse)
+['viz1','viz2','viz3'].forEach(registerMiniViz);
+
+// Redimensionar al cambiar tamaño de ventana
+window.addEventListener('resize', resizeVisibleMiniViz);
+
+// Si cargamos en Home, mantener Home activo por defecto
+activateView('home');

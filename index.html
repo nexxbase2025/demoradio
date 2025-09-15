@@ -29,13 +29,18 @@
       <section class="view active" id="home">
         <div class="player-wrap">
           <div class="portrait-player">
-            <!-- Visualizador -->
-            <canvas id="viz" aria-hidden="true"></canvas>
+            <!-- LOGO como imagen en primer plano -->
+            <img class="logo-mark" src="logo.png" alt="La Buenota" />
 
-            <!-- Muchas notas musicales flotando detrás del logo -->
-            <div class="logo-notes">
+            <!-- Notas musicales detrás del logo y cubriendo el fondo del reproductor -->
+            <div class="logo-notes" aria-hidden="true">
+              <span>♪</span><span>♫</span><span>♬</span><span>♪</span><span>♫</span><span>♬</span>
+              <span>♪</span><span>♫</span><span>♬</span><span>♪</span><span>♫</span><span>♬</span>
               <span>♪</span><span>♫</span><span>♬</span><span>♪</span><span>♫</span><span>♬</span>
             </div>
+
+            <!-- Visualizador principal -->
+            <canvas id="viz" aria-hidden="true"></canvas>
 
             <!-- Público -->
             <div class="crowd"></div>
@@ -130,7 +135,6 @@
     <!-- ===== FOOTER ===== -->
     <footer>
       <div class="socials">
-        <!-- Íconos SVG en un solo color -->
         <a class="sbtn unified" href="#" target="_blank" aria-label="Facebook">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2c0-2 1.2-3 3-3 .9 0 1.8.1 2 .1v2h-1.2c-1 0-1.3.6-1.3 1.2v1.7h2.5l-.4 3h-2v7A10 10 0 0 0 22 12"/></svg>
         </a>
