@@ -69,21 +69,29 @@ main{position:relative; overflow:hidden}
 }
 #viz{position:absolute; inset:auto 0 22% 0; height:32%; filter: drop-shadow(0 0 10px rgba(255,204,51,.45))}
 
-/* Notas musicales flotando por todo el reproductor */
-.logo-notes{position:absolute; inset:0; pointer-events:none; overflow:hidden}
-.logo-notes span{
-  position:absolute; bottom:0; color:var(--gold); font-size:1.6rem;
-  animation: floatUp 6s linear infinite;
+/* Notas musicales SOLO detrás del logo en todo el reproductor */
+.logo-notes {
+  position:absolute;
+  top:20%; /* empieza a la altura del logo */
+  bottom:20%; /* termina antes del botón */
+  left:0; right:0;
+  pointer-events:none;
+  overflow:hidden;
 }
-.logo-notes span:nth-child(1){left:20%; animation-delay:0s}
-.logo-notes span:nth-child(2){left:40%; animation-delay:1.2s}
-.logo-notes span:nth-child(3){left:60%; animation-delay:2.4s}
-.logo-notes span:nth-child(4){left:30%; animation-delay:3.6s}
-.logo-notes span:nth-child(5){left:50%; animation-delay:4.8s}
-.logo-notes span:nth-child(6){left:70%; animation-delay:6s}
-@keyframes floatUp{
-  0%{transform:translateY(100%); opacity:1}
-  100%{transform:translateY(-20%); opacity:0}
+.logo-notes span {
+  position:absolute;
+  color:var(--gold);
+  font-size:2rem;
+  animation: floatLogo 5s linear infinite;
+}
+.logo-notes span:nth-child(1){left:35%; animation-delay:0s}
+.logo-notes span:nth-child(2){left:45%; animation-delay:1s}
+.logo-notes span:nth-child(3){left:55%; animation-delay:2s}
+.logo-notes span:nth-child(4){left:40%; animation-delay:3s}
+.logo-notes span:nth-child(5){left:50%; animation-delay:4s}
+@keyframes floatLogo {
+  0% {transform:translateY(100%); opacity:1}
+  100% {transform:translateY(-120%); opacity:0}
 }
 
 .crowd{

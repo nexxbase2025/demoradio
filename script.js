@@ -219,7 +219,7 @@ if (contactForm){
   });
 }
 
-/* ===== Mini-espectros ===== */
+/* ===== Mini-espectros (Clientes / Artistas / Contacto) ===== */
 function makeMiniViz(canvasId){
   const c = document.getElementById(canvasId);
   if(!c) return;
@@ -236,14 +236,15 @@ function makeMiniViz(canvasId){
     const buf = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(buf);
     cx.clearRect(0,0,c.width,c.height);
-    const W=c.width,H=c.height,bars=20,step=Math.floor(buf.length/bars);
+    const W=c.width,H=c.height,bars=16,step=Math.floor(buf.length/bars);
     for(let i=0;i<bars;i++){
       const v=buf[i*step]/255;
       const x=(i+.5)*W/bars, w=W/bars*.6, h=Math.max(1, v*H);
       const g=cx.createLinearGradient(0,0,0,H);
       g.addColorStop(0,"rgba(255,204,51,.9)");
       g.addColorStop(1,"rgba(255,102,0,.7)");
-      cx.fillStyle=g; cx.fillRect(x-w/2, H-h, w, h);
+      cx.fillStyle=g; 
+      cx.fillRect(x-w/2, H-h, w, h);
     }
     requestAnimationFrame(draw);
   })();
